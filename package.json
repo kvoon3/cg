@@ -1,12 +1,15 @@
 {
-  "name": "commitgen",
+  "name": "@kvoon/cg",
   "version": "0.0.0",
   "private": true,
-  "description": "A simple example library built by tsdown",
+  "description": "a AI-powered git commit message generator",
   "files": [
     "dist"
   ],
   "type": "module",
+  "bin": {
+    "cg": "./dist/run.mjs"
+  },
   "exports": {
     ".": "./dist/index.mjs",
     "./package.json": "./package.json"
@@ -24,5 +27,10 @@
     "oxlint-tsgolint": "^0.16.0",
     "tsdown": "^0.21.3",
     "typescript": "^5.9.3"
+  },
+  "dependencies": {
+    "@mariozechner/pi-agent-core": "^0.58.4",
+    "@mariozechner/pi-ai": "^0.58.4",
+    "cac": "^7.0.0"
   }
 }
