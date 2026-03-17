@@ -14,10 +14,11 @@
   "scripts": {
     "build": "tsdown",
     "dev": "tsdown --watch",
-    "lint": "oxlint --type-aware --tsconfig tsconfig.json",
+    "lint": "oxlint --type-aware",
     "fmt": "oxfmt"
   },
   "devDependencies": {
+    "@types/node": "^25.2.1",
     "oxfmt": "^0.36.0",
     "oxlint": "^1.51.0",
     "oxlint-tsgolint": "^0.16.0",
