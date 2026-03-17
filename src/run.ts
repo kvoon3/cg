@@ -1,5 +1,5 @@
 #!/usr/bin/env node
 
-import { runCli } from './cli.ts'
+import { runCLI } from './cli.ts'
 
-runCli()
+await runCLI()

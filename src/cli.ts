@@ -14,7 +14,7 @@ cli.help()
 
 const { options } = cli.parse()
 
-export async function runCli() {
+export async function runCLI() {
   try {
     const result = generateCommit({
       message: options.message,
