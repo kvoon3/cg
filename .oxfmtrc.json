@@ -1,0 +1,5 @@
+{
+  "$schema": "./node_modules/.pnpm/oxfmt@0.36.0/node_modules/oxfmt/configuration_schema.json",
+  "singleQuote": true,
+  "semi": false
+}
