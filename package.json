@@ -1,6 +1,6 @@
 {
   "name": "cg",
-  "version": "0.0.1",
+  "version": "0.0.2",
   "description": "a AI-powered git commit message generator",
   "files": [
     "dist"
