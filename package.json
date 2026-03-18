@@ -18,7 +18,9 @@
     "build": "tsdown",
     "dev": "tsdown --watch",
     "lint": "oxlint --type-aware",
-    "fmt": "oxfmt"
+    "fmt": "oxfmt",
+    "typecheck": "tsc --noEmit",
+    "run": "node ./src/run.ts"
   },
   "devDependencies": {
     "@types/node": "^25.2.1",
@@ -31,6 +33,7 @@
     "typescript": "^5.9.3"
   },
   "dependencies": {
+    "@clack/prompts": "^0.11.0",
     "@mariozechner/pi-agent-core": "^0.58.4",
     "@mariozechner/pi-ai": "^0.58.4",
     "cac": "^7.0.0"
