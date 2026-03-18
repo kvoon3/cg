@@ -2,6 +2,10 @@ import { execSync } from 'child_process'
 import { Agent } from '@mariozechner/pi-agent-core'
 import { getModel, getProviders, getModels } from '@mariozechner/pi-ai'
 import { confirm, text, isCancel, cancel, spinner, select } from '@clack/prompts'
+import { homedir } from 'os'
+import { join } from 'path'
+import { readFileSync, writeFileSync, existsSync } from 'fs'
+import type { Settings } from './types.ts'
 
 // Get all available providers
 const AVAILABLE_PROVIDERS = getProviders()
@@ -9,6 +13,92 @@ const AVAILABLE_PROVIDERS = getProviders()
 // Default provider and model
 const DEFAULT_PROVIDER = 'minimax-cn'
 const DEFAULT_MODEL = 'MiniMax-M2.5-highspeed'
+
+// Settings file path
+const SETTINGS_FILE = join(homedir(), '.cgrc.json')
+
+// Load settings from file
+function loadSettingsFromFile(): Settings {
+  try {
+    if (existsSync(SETTINGS_FILE)) {
+      const content = readFileSync(SETTINGS_FILE, 'utf-8')
+      return JSON.parse(content)
+    }
+  } catch {
+    // Ignore errors, return defaults
+  }
+  return {}
+}
+
+// Setup function: loads, prompts, saves, and returns settings
+export async function setupSettings(): Promise<Settings> {
+  // 1. Load existing settings
+  const current = loadSettingsFromFile()
+
+  // 2. Prompt for provider
+  let provider = current.provider
+  if (!provider) {
+    const selected = await select({
+      message: 'Select AI provider:',
+      options: AVAILABLE_PROVIDERS.map((p) => ({
+        value: p,
+        label: p,
+      })),
+      initialValue: DEFAULT_PROVIDER,
+    })
+
+    if (isCancel(selected)) {
+      cancel('Setup cancelled.')
+      process.exit(0)
+    }
+    provider = selected as string
+  }
+
+  // 3. Prompt for model
+  const availableModels = getModels(provider as any).map((m) => m.id)
+  let model = current.model && availableModels.includes(current.model) ? current.model : undefined
+
+  if (!model) {
+    const selected = await select({
+      message: `Select model for ${provider}:`,
+      options: availableModels.map((m) => ({
+        value: m,
+        label: m,
+      })),
+      initialValue: DEFAULT_MODEL,
+    })
+
+    if (isCancel(selected)) {
+      cancel('Setup cancelled.')
+      process.exit(0)
+    }
+    model = selected as string
+  }
+
+  // 4. Save to file
+  const settings: Settings = { provider, model }
+  writeFileSync(SETTINGS_FILE, JSON.stringify(settings, null, 2))
+  process.stdout.write(`Settings saved to ${SETTINGS_FILE}\n`)
+  process.stdout.write(`Provider: ${provider}\n`)
+  process.stdout.write(`Model: ${model}\n`)
+
+  // 5. Return settings
+  return settings
+}
+
+// Load settings (for use in generateCommit)
+export function loadSettings(): Settings {
+  return loadSettingsFromFile()
+}
+
+// Try to load settings, if not exist run setup and save
+export async function trySetupSettings(): Promise<Settings> {
+  const settings = loadSettingsFromFile()
+  if (!settings.provider || !settings.model) {
+    return await setupSettings()
+  }
+  return settings
+}
 
 function execGitCommit(message: string): void {
   try {
@@ -21,10 +111,10 @@ function execGitCommit(message: string): void {
 }
 
 // Suppress console.log/warn/error from dependencies to prevent leaking internal messages
-const noop = () => {}
-console.log = noop
-console.warn = noop
-console.error = noop
+// const noop = () => {}
+// console.log = noop
+// console.warn = noop
+// console.error = noop
 
 export interface CommitOptions {
   message?: string
@@ -60,7 +150,15 @@ function getGitDiff(): { staged: string; unstaged: string } {
 }
 
 export async function generateCommit(options: CommitOptions = {}): Promise<string> {
-  const { message, type, scope, body, generate = true, provider: providerOption, model: modelOption } = options
+  const {
+    message,
+    type,
+    scope,
+    body,
+    generate = true,
+    provider: providerOption,
+    model: modelOption,
+  } = options
 
   // Manual mode or no generation
   if (!generate) {
@@ -84,47 +182,17 @@ export async function generateCommit(options: CommitOptions = {}): Promise<strin
 
   const diffContent = `Staged changes:\n${staged}\n\nUnstaged changes:\n${unstaged}`
 
-  // Resolve provider - use option or prompt interactively
-  let provider = providerOption
-  if (!provider) {
-    const selected = await select({
-      message: 'Select AI provider:',
-      options: AVAILABLE_PROVIDERS.map(p => ({
-        value: p,
-        label: p,
-      })),
-      initialValue: DEFAULT_PROVIDER,
-    })
-
-    if (isCancel(selected)) {
-      cancel('Commit message generation cancelled.')
-      process.exit(0)
-    }
-    provider = selected as string
+  // Resolve provider and model - use option, saved settings, or run setup
+  let settings = loadSettings()
+  if (!settings.provider || !settings.model) {
+    // No saved settings, run setup to prompt and save
+    settings = await setupSettings()
   }
+  // Override with CLI options if provided
+  if (providerOption) settings.provider = providerOption
+  if (modelOption) settings.model = modelOption
 
-  // Resolve model - use option or prompt interactively
-  let model = modelOption
-  if (!model) {
-    const availableModels = getModels(provider as any).map(m => m.id)
-
-    const selected = await select({
-      message: `Select model for ${provider}:`,
-      options: availableModels.map(m => ({
-        value: m,
-        label: m,
-      })),
-      initialValue: DEFAULT_MODEL,
-    })
-
-    if (isCancel(selected)) {
-      cancel('Commit message generation cancelled.')
-      process.exit(0)
-    }
-    model = selected as string
-  }
-
-  const selectedModel = getModel(provider as any, model as any)
+  const selectedModel = getModel(settings.provider as any, settings.model as any)
 
   let userFeedback = message // Start with user's message as reference if provided
 
