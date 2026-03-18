@@ -1,7 +1,7 @@
 import { execSync } from 'child_process'
 import { Agent } from '@mariozechner/pi-agent-core'
 import { getModel } from '@mariozechner/pi-ai'
-import { confirm, text, isCancel, cancel } from '@clack/prompts'
+import { confirm, text, isCancel, cancel, spinner } from '@clack/prompts'
 
 function execGitCommit(message: string): void {
   try {
@@ -115,9 +115,14 @@ Important requirements:
       promptContent = `${diffContent}\n\nUser's reference message: "${userFeedback}"`
     }
 
+    const s = spinner()
+    s.start('Analyzing changes and generating commit message...')
+
     try {
       await agent.prompt(promptContent)
+      s.stop('Done!')
     } catch (e) {
+      s.stop('Error!')
       return `Error: ${e instanceof Error ? e.message : 'Failed to generate commit message'}`
     }
 
