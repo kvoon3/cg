@@ -21,7 +21,7 @@
     "typecheck": "tsc --noEmit",
     "cg": "node ./src/run.ts",
     "up": "npx taze -I major",
-    "publish": "npx bumpp && pnpm publish"
+    "release": "npx bumpp && pnpm publish"
   },
   "devDependencies": {
     "@types/node": "^25.2.1",
