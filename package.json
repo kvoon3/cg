@@ -1,7 +1,24 @@
 {
   "name": "@kvoon/cg",
   "version": "0.0.4",
-  "description": "a AI-powered git commit message generator",
+  "description": "AI-powered git commit message generator",
+  "keywords": [
+    "git",
+    "commit",
+    "ai",
+    "clack",
+    "conventional-commits"
+  ],
+  "license": "MIT",
+  "author": "kvoon",
+  "repository": {
+    "type": "git",
+    "url": "https://github.com/kvoon3/cg"
+  },
+  "bugs": {
+    "url": "https://github.com/kvoon3/cg/issues"
+  },
+  "homepage": "https://github.com/kvoon3/cg#readme",
   "files": [
     "dist"
   ],
