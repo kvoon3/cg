@@ -1,8 +1,11 @@
 import cac from 'cac'
 import { generateCommit, commit, trySetupSettings } from './index.ts'
+import pkg from '../package.json' with { type: 'json' }
 
 export async function runCLI() {
   const cli = cac('cg')
+
+  cli.help().version(pkg.version)
 
   // Define settings command first (before [message] to avoid conflict)
   cli.command('settings', 'Configure default provider and model').action(async () => {
