@@ -20,7 +20,7 @@
     "lint": "oxlint --type-aware",
     "fmt": "oxfmt",
     "typecheck": "tsc --noEmit",
-    "run": "node ./src/run.ts"
+    "cg": "node ./src/run.ts"
   },
   "devDependencies": {
     "@types/node": "^25.2.1",

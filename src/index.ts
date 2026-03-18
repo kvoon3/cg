@@ -1,7 +1,14 @@
 import { execSync } from 'child_process'
 import { Agent } from '@mariozechner/pi-agent-core'
-import { getModel } from '@mariozechner/pi-ai'
-import { confirm, text, isCancel, cancel, spinner } from '@clack/prompts'
+import { getModel, getProviders, getModels } from '@mariozechner/pi-ai'
+import { confirm, text, isCancel, cancel, spinner, select } from '@clack/prompts'
+
+// Get all available providers
+const AVAILABLE_PROVIDERS = getProviders()
+
+// Default provider and model
+const DEFAULT_PROVIDER = 'minimax-cn'
+const DEFAULT_MODEL = 'MiniMax-M2.5-highspeed'
 
 function execGitCommit(message: string): void {
   try {
@@ -26,6 +33,8 @@ export interface CommitOptions {
   body?: string
   generate?: boolean
   execute?: boolean
+  provider?: string
+  model?: string
 }
 
 export function commit(message: string): void {
@@ -51,7 +60,7 @@ function getGitDiff(): { staged: string; unstaged: string } {
 }
 
 export async function generateCommit(options: CommitOptions = {}): Promise<string> {
-  const { message, type, scope, body, generate = true } = options
+  const { message, type, scope, body, generate = true, provider: providerOption, model: modelOption } = options
 
   // Manual mode or no generation
   if (!generate) {
@@ -75,7 +84,47 @@ export async function generateCommit(options: CommitOptions = {}): Promise<strin
 
   const diffContent = `Staged changes:\n${staged}\n\nUnstaged changes:\n${unstaged}`
 
-  const model = getModel('minimax-cn', 'MiniMax-M2.5-highspeed')
+  // Resolve provider - use option or prompt interactively
+  let provider = providerOption
+  if (!provider) {
+    const selected = await select({
+      message: 'Select AI provider:',
+      options: AVAILABLE_PROVIDERS.map(p => ({
+        value: p,
+        label: p,
+      })),
+      initialValue: DEFAULT_PROVIDER,
+    })
+
+    if (isCancel(selected)) {
+      cancel('Commit message generation cancelled.')
+      process.exit(0)
+    }
+    provider = selected as string
+  }
+
+  // Resolve model - use option or prompt interactively
+  let model = modelOption
+  if (!model) {
+    const availableModels = getModels(provider as any).map(m => m.id)
+
+    const selected = await select({
+      message: `Select model for ${provider}:`,
+      options: availableModels.map(m => ({
+        value: m,
+        label: m,
+      })),
+      initialValue: DEFAULT_MODEL,
+    })
+
+    if (isCancel(selected)) {
+      cancel('Commit message generation cancelled.')
+      process.exit(0)
+    }
+    model = selected as string
+  }
+
+  const selectedModel = getModel(provider as any, model as any)
 
   let userFeedback = message // Start with user's message as reference if provided
 
@@ -83,7 +132,7 @@ export async function generateCommit(options: CommitOptions = {}): Promise<strin
   while (true) {
     const agent = new Agent({
       initialState: {
-        model,
+        model: selectedModel,
         systemPrompt: [
           'You are a helpful assistant that generates git commit messages.',
           'Analyze the provided git diff and generate a concise, conventional commit message.',

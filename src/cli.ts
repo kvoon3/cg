@@ -9,6 +9,8 @@ export async function runCLI() {
     .option('-t, --type <type>', 'Commit type (feat, fix, docs, etc.)')
     .option('-s, --scope <scope>', 'Commit scope')
     .option('-b, --body <body>', 'Commit body')
+    .option('-p, --provider <provider>', 'AI provider (e.g., minimax-cn, anthropic, openai)')
+    .option('-m, --model <model>', 'AI model (e.g., MiniMax-M2.5-highspeed, claude-3-5-sonnet)')
     .option('--no-generate', 'Skip AI generation, use raw message')
     .option('--dry-run', 'Show commit message without executing git commit')
     .action(async (message: string | undefined, options: Record<string, any>) => {
@@ -19,6 +21,8 @@ export async function runCLI() {
           scope: options.scope,
           body: options.body,
           generate: options.generate ?? true,
+          provider: options.provider,
+          model: options.model,
         })
         if (!result) return
 
