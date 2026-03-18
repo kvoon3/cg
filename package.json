@@ -1,7 +1,6 @@
 {
-  "name": "@kvoon/cg",
+  "name": "cg",
   "version": "0.0.1",
-  "private": true,
   "description": "a AI-powered git commit message generator",
   "files": [
     "dist"
