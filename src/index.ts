@@ -84,17 +84,22 @@ export async function generateCommit(options: CommitOptions = {}): Promise<strin
     const agent = new Agent({
       initialState: {
         model,
-        systemPrompt: `You are a helpful assistant that generates git commit messages.
-Analyze the provided git diff and generate a concise, conventional commit message.
-Follow the conventional commits format: <type>(<scope>): <description>
-
-Types: feat, fix, docs, style, refactor, perf, test, chore, ci, build, revert
-
-Important requirements:
-1. If the user provides a reference message, use it as inspiration but generate a better commit message
-2. Correct any grammar or spelling errors in the user's input
-3. Always output the commit message in English, regardless of the input language
-4. Provide only the commit message, no explanations.`,
+        systemPrompt: [
+          'You are a helpful assistant that generates git commit messages.',
+          'Analyze the provided git diff and generate a concise, conventional commit message.',
+          'Follow the conventional commits format: <type>(<scope>): <description>',
+          '',
+          'Types: feat, fix, docs, style, refactor, perf, test, chore, ci, build, revert',
+          '',
+          'Important requirements:',
+          '1. If the user provides a reference message, use it as inspiration but generate a better commit message',
+          "2. Correct any grammar or spelling errors in the user's input",
+          '3. Always output the commit message in English, regardless of the input language',
+          '4. Provide only the commit message, no explanations.',
+          '5. Only add a commit body when there are significant changes (e.g., multiple files changed, complex refactoring, or many logical changes). Keep it simple otherwise.',
+          '6. When adding a body, use bullet points to list each change.',
+          '7. Format: Use blank line between subject and body. Use hyphen (-) for bullet points in the body.',
+        ].join('\n'),
       },
     })
 
