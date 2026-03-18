@@ -20,7 +20,9 @@
     "lint": "oxlint --type-aware",
     "fmt": "oxfmt",
     "typecheck": "tsc --noEmit",
-    "cg": "node ./src/run.ts"
+    "cg": "node ./src/run.ts",
+    "up": "npx taze -I major",
+    "publish": "npx bumpp && pnpm publish"
   },
   "devDependencies": {
     "@types/node": "^25.2.1",
@@ -36,6 +38,7 @@
     "@clack/prompts": "^0.11.0",
     "@mariozechner/pi-agent-core": "^0.58.4",
     "@mariozechner/pi-ai": "^0.58.4",
-    "cac": "^7.0.0"
+    "cac": "^7.0.0",
+    "npmx-connector": "^0.4.0"
   }
 }
