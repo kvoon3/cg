@@ -34,6 +34,7 @@
     "build": "tsdown",
     "dev": "tsdown --watch",
     "lint": "oxlint --type-aware",
+    "lint:fix": "oxlint --type-aware --fix",
     "fmt": "oxfmt",
     "typecheck": "tsc --noEmit",
     "cg": "node ./src/run.ts",
@@ -66,8 +67,8 @@
   },
   "lint-staged": {
     "*": [
-      "oxfmt",
-      "oxlint --type-aware"
+      "pnpm run fmt",
+      "pnpm run lint:fix"
     ]
   },
   "inlinedDependencies": {
