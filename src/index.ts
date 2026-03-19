@@ -12,7 +12,7 @@ export async function commit(message: string): Promise<void> {
   await execGitCommit(message)
 }
 
-export async function generateCommit(options: CommitOptions = {}): Promise<string> {
+export async function generateCommit(options: CommitOptions): Promise<string> {
   const {
     message,
     type,
@@ -26,15 +26,15 @@ export async function generateCommit(options: CommitOptions = {}): Promise<strin
 
   // Manual mode or no generation
   if (!generate) {
-    const parts: string[] = []
-
-    if (type) parts.push(type)
-    if (scope) parts.push(`(${scope})`)
-    if (parts.length > 0) parts.push(': ')
-    if (message) parts.push(message)
-    if (body) parts.push(`\n\n${body}`)
-
-    return parts.join('') || 'No commit message provided'
+    return (
+      [
+        type,
+        scope ? `(${scope})` : '',
+        type || scope ? ': ' : '',
+        message,
+        body ? `\n\n${body}` : '',
+      ].join('') || 'No commit message provided'
+    )
   }
 
   // AI generation path
@@ -44,7 +44,13 @@ export async function generateCommit(options: CommitOptions = {}): Promise<strin
     return 'No changes to commit'
   }
 
-  const diffContent = `Staged changes:\n${staged}\n\nUnstaged changes:\n${unstaged}${untracked ? `\n\nUntracked files:\n${untracked}` : ''}`
+  const diffContent = [
+    `Staged changes:\n${staged}`,
+    `Unstaged changes:\n${unstaged}`,
+    untracked ? `Untracked files:\n${untracked}` : '',
+  ]
+    .filter(Boolean)
+    .join('\n\n')
 
   // Resolve provider and model: CLI option > saved settings > interactive setup
   let settings = loadSettings()
@@ -96,10 +102,9 @@ export async function generateCommit(options: CommitOptions = {}): Promise<strin
     })
 
     // Build the prompt with user feedback if provided
-    let promptContent = diffContent
-    if (userFeedback) {
-      promptContent = `${diffContent}\n\nUser's reference message: "${userFeedback}"`
-    }
+    const promptContent = userFeedback
+      ? `${diffContent}\n\nUser's reference message: "${userFeedback}"`
+      : diffContent
 
     const s = spinner()
     s.start('Analyzing changes and generating commit message...')

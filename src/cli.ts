@@ -35,11 +35,7 @@ export async function runCLI() {
       try {
         const result = await generateCommit({
           message,
-          type: options.type,
-          scope: options.scope,
-          body: options.body,
-          generate: options.generate ?? true,
-          lang: options.lang,
+          ...options,
         })
         if (!result) return
 
