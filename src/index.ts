@@ -8,8 +8,8 @@ import type { CommitOptions } from './types.ts'
 // Re-export for CLI convenience
 export { setupSettings } from './settings.ts'
 
-export function commit(message: string): void {
-  execGitCommit(message)
+export async function commit(message: string): Promise<void> {
+  await execGitCommit(message)
 }
 
 export async function generateCommit(options: CommitOptions = {}): Promise<string> {
@@ -38,7 +38,7 @@ export async function generateCommit(options: CommitOptions = {}): Promise<strin
   }
 
   // AI generation path
-  const { staged, unstaged, untracked } = getGitDiff()
+  const { staged, unstaged, untracked } = await getGitDiff()
 
   if (!staged && !unstaged && !untracked) {
     return 'No changes to commit'

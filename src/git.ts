@@ -1,26 +1,28 @@
-import { execSync } from 'child_process'
+import { x } from 'tinyexec'
 
-function runGitCommand(cmd: string): string {
+async function runGitCommand(cmd: string): Promise<string> {
   try {
-    return execSync(cmd, { encoding: 'utf-8', stdio: ['pipe', 'pipe', 'ignore'] })
+    const result = await x(cmd)
+    return result.stdout
   } catch {
     return ''
   }
 }
 
-export function getGitDiff(): { staged: string; unstaged: string; untracked: string } {
-  const staged = runGitCommand('git diff --cached')
-  const unstaged = runGitCommand('git diff')
-  const untracked = runGitCommand('git ls-files --others --exclude-standard')
+export async function getGitDiff(): Promise<{ staged: string; unstaged: string; untracked: string }> {
+  const [staged, unstaged, untracked] = await Promise.all([
+    runGitCommand('git diff --cached'),
+    runGitCommand('git diff'),
+    runGitCommand('git ls-files --others --exclude-standard'),
+  ])
 
   return { staged, unstaged, untracked }
 }
 
-export function execGitCommit(message: string): void {
+export async function execGitCommit(message: string): Promise<void> {
   try {
-    execSync(`git commit -a -m "${message.replace(/"/g, '\\"')}"`, {
-      stdio: 'inherit',
-    })
+    const escaped = message.replace(/"/g, '\\"')
+    await x('git', ['commit', '-a', '-m', `"${escaped}"`], { nodeOptions: { stdio: 'inherit' } })
   } catch (e) {
     throw new Error(e instanceof Error ? e.message : 'Failed to commit')
   }

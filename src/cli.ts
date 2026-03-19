@@ -47,7 +47,7 @@ export async function runCLI() {
         if (options.dryRun) {
           process.stdout.write(result + '\n')
         } else {
-          commit(result)
+          await commit(result)
           process.stdout.write(`Committed: ${result}\n`)
         }
       } catch (error) {
