@@ -40,10 +40,10 @@ On first run, `cg` will prompt you to select an AI provider and model. Settings 
 
 ## Options
 
-| Flag         | Description                              |
-|--------------|------------------------------------------|
-| `-t`         | Commit type (feat, fix, docs, etc.)      |
-| `-s`         | Commit scope                             |
-| `-b`         | Commit body                              |
-| `--dry-run`  | Show message without executing commit    |
-| `--no-generate` | Skip AI generation                     |
+| Flag            | Description                           |
+| --------------- | ------------------------------------- |
+| `-t`            | Commit type (feat, fix, docs, etc.)   |
+| `-s`            | Commit scope                          |
+| `-b`            | Commit body                           |
+| `--dry-run`     | Show message without executing commit |
+| `--no-generate` | Skip AI generation                    |
