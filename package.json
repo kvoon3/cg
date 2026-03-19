@@ -47,6 +47,7 @@
     "oxfmt": "^0.36.0",
     "oxlint": "^1.51.0",
     "oxlint-tsgolint": "^0.16.0",
+    "tinyexec": "^1.0.4",
     "tsdown": "^0.21.3",
     "typescript": "^5.9.3"
   },
