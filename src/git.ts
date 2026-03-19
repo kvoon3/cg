@@ -1,19 +1,12 @@
 import { x } from 'tinyexec'
 
-async function runGitCommand(cmd: string): Promise<string> {
-  try {
-    const result = await x(cmd)
-    return result.stdout
-  } catch {
-    return ''
-  }
-}
-
 export async function getGitDiff(): Promise<{ staged: string; unstaged: string; untracked: string }> {
+  const run = (args: string[]) => Promise.resolve(x('git', args)).then(r => r.stdout).catch(() => '')
+
   const [staged, unstaged, untracked] = await Promise.all([
-    runGitCommand('git diff --cached'),
-    runGitCommand('git diff'),
-    runGitCommand('git ls-files --others --exclude-standard'),
+    run(['diff', '--cached']),
+    run(['diff']),
+    run(['ls-files', '--others', '--exclude-standard']),
   ])
 
   return { staged, unstaged, untracked }
