@@ -3,29 +3,29 @@
   "version": "0.0.6",
   "description": "AI-powered git commit message generator",
   "keywords": [
-    "git",
-    "commit",
     "ai",
     "clack",
-    "conventional-commits"
+    "commit",
+    "conventional-commits",
+    "git"
   ],
+  "homepage": "https://github.com/kvoon3/cg#readme",
+  "bugs": {
+    "url": "https://github.com/kvoon3/cg/issues"
+  },
   "license": "MIT",
   "author": "kvoon",
   "repository": {
     "type": "git",
     "url": "https://github.com/kvoon3/cg"
   },
-  "bugs": {
-    "url": "https://github.com/kvoon3/cg/issues"
+  "bin": {
+    "cg": "./dist/run.mjs"
   },
-  "homepage": "https://github.com/kvoon3/cg#readme",
   "files": [
     "dist"
   ],
   "type": "module",
-  "bin": {
-    "cg": "./dist/run.mjs"
-  },
   "exports": {
     ".": "./dist/index.mjs",
     "./package.json": "./package.json"
@@ -38,7 +38,15 @@
     "typecheck": "tsc --noEmit",
     "cg": "node ./src/run.ts",
     "up": "npx taze -I major",
-    "release": "npx bumpp && pnpm publish"
+    "release": "npx bumpp && pnpm publish",
+    "prepare": "simple-git-hooks"
+  },
+  "dependencies": {
+    "@clack/prompts": "^0.11.0",
+    "@mariozechner/pi-agent-core": "^0.58.4",
+    "@mariozechner/pi-ai": "^0.58.4",
+    "cac": "^7.0.0",
+    "npmx-connector": "^0.4.0"
   },
   "devDependencies": {
     "@types/node": "^25.2.1",
@@ -53,12 +61,14 @@
     "tsdown": "^0.21.3",
     "typescript": "^5.9.3"
   },
-  "dependencies": {
-    "@clack/prompts": "^0.11.0",
-    "@mariozechner/pi-agent-core": "^0.58.4",
-    "@mariozechner/pi-ai": "^0.58.4",
-    "cac": "^7.0.0",
-    "npmx-connector": "^0.4.0"
+  "simple-git-hooks": {
+    "pre-commit": "pnpm exec lint-staged"
+  },
+  "lint-staged": {
+    "*": [
+      "oxfmt",
+      "oxlint --type-aware"
+    ]
   },
   "inlinedDependencies": {
     "tinyexec": "1.0.4"
