@@ -59,5 +59,8 @@
     "@mariozechner/pi-ai": "^0.58.4",
     "cac": "^7.0.0",
     "npmx-connector": "^0.4.0"
+  },
+  "inlinedDependencies": {
+    "tinyexec": "1.0.4"
   }
 }
