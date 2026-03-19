@@ -38,13 +38,13 @@ export async function generateCommit(options: CommitOptions = {}): Promise<strin
   }
 
   // AI generation path
-  const { staged, unstaged } = getGitDiff()
+  const { staged, unstaged, untracked } = getGitDiff()
 
-  if (!staged && !unstaged) {
+  if (!staged && !unstaged && !untracked) {
     return 'No changes to commit'
   }
 
-  const diffContent = `Staged changes:\n${staged}\n\nUnstaged changes:\n${unstaged}`
+  const diffContent = `Staged changes:\n${staged}\n\nUnstaged changes:\n${unstaged}${untracked ? `\n\nUntracked files:\n${untracked}` : ''}`
 
   // Resolve provider and model: CLI option > saved settings > interactive setup
   let settings = loadSettings()

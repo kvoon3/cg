@@ -1,21 +1,19 @@
 import { execSync } from 'child_process'
 
-export function getGitDiff(): { staged: string; unstaged: string } {
+function runGitCommand(cmd: string): string {
   try {
-    const staged = execSync('git diff --cached', {
-      encoding: 'utf-8',
-      stdio: ['pipe', 'pipe', 'ignore'],
-    })
-
-    const unstaged = execSync('git diff', {
-      encoding: 'utf-8',
-      stdio: ['pipe', 'pipe', 'ignore'],
-    })
-
-    return { staged, unstaged }
+    return execSync(cmd, { encoding: 'utf-8', stdio: ['pipe', 'pipe', 'ignore'] })
   } catch {
-    return { staged: '', unstaged: '' }
+    return ''
   }
+}
+
+export function getGitDiff(): { staged: string; unstaged: string; untracked: string } {
+  const staged = runGitCommand('git diff --cached')
+  const unstaged = runGitCommand('git diff')
+  const untracked = runGitCommand('git ls-files --others --exclude-standard')
+
+  return { staged, unstaged, untracked }
 }
 
 export function execGitCommit(message: string): void {
