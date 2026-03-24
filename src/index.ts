@@ -8,8 +8,8 @@ import type { CommitOptions } from './types.ts'
 // Re-export for CLI convenience
 export { setupSettings } from './settings.ts'
 
-export async function commit(message: string): Promise<void> {
-  await execGitCommit(message)
+export async function commit(message: string, { all = false } = {}): Promise<void> {
+  await execGitCommit(message, { all })
 }
 
 export async function generateCommit(options: CommitOptions): Promise<string> {
@@ -40,18 +40,25 @@ export async function generateCommit(options: CommitOptions): Promise<string> {
 
   // AI generation path
   const { staged, unstaged, untracked } = await getGitDiff()
+  const useAll = options.all
 
   if (!staged && !unstaged && !untracked) {
     return 'No changes to commit'
   }
 
-  const diffContent = [
-    `Staged changes:\n${staged}`,
-    `Unstaged changes:\n${unstaged}`,
-    untracked ? `Untracked files:\n${untracked}` : '',
-  ]
-    .filter(Boolean)
-    .join('\n\n')
+  if (!useAll && !staged) {
+    return 'No staged changes to commit. Use --all to commit unstaged and untracked changes.'
+  }
+
+  const diffContent = useAll
+    ? [
+        `Staged changes:\n${staged}`,
+        `Unstaged changes:\n${unstaged}`,
+        `Untracked files:\n${untracked}`,
+      ]
+        .filter(Boolean)
+        .join('\n\n')
+    : `Staged changes:\n${staged}`
 
   // Resolve provider and model: CLI option > saved settings > interactive setup
   let settings = loadSettings()

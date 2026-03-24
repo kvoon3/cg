@@ -30,6 +30,7 @@ export async function runCLI() {
     .option('-b, --body <body>', 'Commit body')
     .option('-l, --lang <lang>', 'Commit message language')
     .option('-y, --yes', 'Skip confirmation and accept the generated commit message')
+    .option('-a, --all', 'Stage and commit all changes (unstaged, staged, and untracked)')
     .option('--no-generate', 'Skip AI generation, use raw message')
     .option('--dry-run', 'Show commit message without executing git commit')
     .action(async (message: string | undefined, options: Record<string, any>) => {
@@ -44,7 +45,7 @@ export async function runCLI() {
         if (options.dryRun) {
           process.stdout.write(result + '\n')
         } else {
-          await commit(result)
+          await commit(result, { all: options.all })
           process.stdout.write(`Committed: ${result}\n`)
         }
       } catch (error) {

@@ -15,4 +15,5 @@ export interface CommitOptions {
   model?: string
   lang?: string
   yes?: boolean
+  all?: boolean
 }
