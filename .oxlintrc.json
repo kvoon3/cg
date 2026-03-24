@@ -1,15 +1,4 @@
 {
   "$schema": "./node_modules/oxlint/configuration_schema.json",
-  "jsPlugins": [
-    "eslint-plugin-antfu"
-  ],
-  "plugins": [
-    "typescript",
-    "unicorn",
-    "import",
-    "oxc",
-    "promise",
-    "vitest",
-    "eslint"
-  ]
+  "plugins": ["typescript", "unicorn", "import", "oxc", "promise", "vitest", "eslint"]
 }
