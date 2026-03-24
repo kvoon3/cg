@@ -29,6 +29,7 @@ export async function runCLI() {
     .option('-s, --scope <scope>', 'Commit scope')
     .option('-b, --body <body>', 'Commit body')
     .option('-l, --lang <lang>', 'Commit message language')
+    .option('-y, --yes', 'Skip confirmation and accept the generated commit message')
     .option('--no-generate', 'Skip AI generation, use raw message')
     .option('--dry-run', 'Show commit message without executing git commit')
     .action(async (message: string | undefined, options: Record<string, any>) => {

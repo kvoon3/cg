@@ -22,6 +22,7 @@ export async function generateCommit(options: CommitOptions): Promise<string> {
     provider: providerOption,
     model: modelOption,
     lang: langOption,
+    yes = false,
   } = options
 
   // Manual mode or no generation
@@ -127,6 +128,11 @@ export async function generateCommit(options: CommitOptions): Promise<string> {
     }
 
     const finalMessage = commitMessage.trim()
+
+    // Auto-accept if --yes flag is set
+    if (yes) {
+      return finalMessage
+    }
 
     // confirm
     const shouldAccept = await confirm({
