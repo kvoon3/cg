@@ -1,6 +1,6 @@
 {
   "name": "@kvoon/cg",
-  "version": "0.0.7",
+  "version": "0.1.0",
   "description": "AI-powered git commit message generator",
   "keywords": [
     "ai",
