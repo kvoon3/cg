@@ -25,7 +25,7 @@ export async function execGitCommit(message: string, { all = false } = {}): Prom
       await x('git', ['add', '-A'], { nodeOptions: { stdio: 'inherit' } })
     }
     const escaped = message.replace(/"/g, '\\"')
-    await x('git', ['commit', '-m', `"${escaped}"`], { nodeOptions: { stdio: 'inherit' } })
+    await x('git', ['commit', '-m', escaped], { nodeOptions: { stdio: 'inherit' } })
   } catch (e) {
     throw new Error(e instanceof Error ? e.message : 'Failed to commit')
   }
